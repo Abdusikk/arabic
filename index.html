@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#fdf6ec">
+<title>عربي كل يوم — Арабский каждый день</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#fdf6ec; --bg2:#f7e8d5;
+  --ink:#3b2f2f; --muted:#8a7a6d;
+  --accent:#c2703d; --accent2:#a8552a;
+  --green:#4c9a6a; --red:#c05555;
+  --card:#ffffff; --line:#efe2d0;
+  --gold:#d9a441;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Manrope',system-ui,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(217,164,65,.14), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(194,112,61,.12), transparent 45%),
+    linear-gradient(160deg,var(--bg1),var(--bg2));
+  min-height:100vh;
+}
+.pattern{
+  position:fixed;inset:0;pointer-events:none;opacity:.5;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(194,112,61,.045) 0 2px, transparent 2px 26px),
+    repeating-linear-gradient(-45deg, rgba(194,112,61,.045) 0 2px, transparent 2px 26px);
+}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px;position:relative}
+.header{text-align:center;padding:26px 0 10px}
+.logo-ar{font-family:'Amiri',serif;font-size:44px;color:var(--accent2);line-height:1.1}
+h1{font-size:24px;font-weight:800;letter-spacing:.3px;margin-top:4px}
+.sub{color:var(--muted);font-size:14px;margin-top:6px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 8px;text-align:center;box-shadow:0 4px 14px rgba(120,80,40,.06)}
+.stat b{display:block;font-size:22px;font-weight:800;color:var(--accent2)}
+.stat span{font-size:11.5px;color:var(--muted)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:16px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
+  padding:14px 26px;border-radius:14px;box-shadow:0 6px 16px rgba(168,85,42,.28);
+  transition:transform .12s, box-shadow .12s;
+}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:#fff;color:var(--accent2);border:1.5px solid var(--accent);box-shadow:none}
+.btn.small{font-size:14px;padding:10px 18px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.cta-row{text-align:center;margin:6px 0 26px}
+.block-title{display:flex;align-items:center;gap:10px;margin:24px 0 12px;font-weight:800;font-size:15px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.block-title::after{content:'';flex:1;height:1px;background:var(--line)}
+.units{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.unit{
+  background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+  padding:14px 6px;text-align:center;cursor:pointer;position:relative;
+  transition:transform .12s, box-shadow .12s;
+}
+.unit:hover:not(.locked){transform:translateY(-2px);box-shadow:0 8px 18px rgba(120,80,40,.1)}
+.unit.locked{opacity:.55;cursor:not-allowed}
+.unit .num{font-size:12px;color:var(--muted);font-weight:700}
+.unit .name{font-size:13px;font-weight:700;margin-top:4px}
+.unit .ico{font-size:22px;margin-top:4px}
+.unit.exam{border-color:var(--gold);background:linear-gradient(160deg,#fffdf6,#fdf3dd)}
+.unit.done{border-color:var(--green)}
+.unit .badge{position:absolute;top:-7px;right:-5px;background:var(--green);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px}
+.unit.next{border-color:var(--accent);box-shadow:0 0 0 3px rgba(194,112,61,.15)}
+/* карточка слова */
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:22px;
+  padding:34px 20px;text-align:center;box-shadow:0 10px 28px rgba(120,80,40,.1);
+}
+.ar-big{font-family:'Amiri',serif;font-size:52px;direction:rtl;color:var(--accent2)}
+.tr{color:var(--muted);font-size:16px;margin-top:2px;font-style:italic}
+.ru{font-size:22px;font-weight:800;margin-top:14px;min-height:28px}
+.ru.hidden-ans{color:transparent;text-shadow:0 0 12px rgba(59,47,47,.35);user-select:none}
+.reveal{margin-top:14px}
+.dots{display:flex;justify-content:center;gap:7px;margin:18px 0}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.dot.on{background:var(--accent)}
+.navrow{display:flex;justify-content:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+.topbar{display:flex;align-items:center;gap:12px;margin:14px 0 20px}
+.back{background:#fff;border:1.5px solid var(--line);border-radius:12px;width:40px;height:40px;font-size:18px;cursor:pointer;color:var(--ink)}
+.ptitle{font-weight:800;font-size:17px;flex:1}
+.prog{height:8px;background:var(--line);border-radius:10px;overflow:hidden;margin-bottom:22px}
+.prog>div{height:100%;background:linear-gradient(90deg,var(--gold),var(--accent));border-radius:10px;transition:width .3s}
+/* тест */
+.q-ar{font-family:'Amiri',serif;direction:rtl;font-size:46px;color:var(--accent2);text-align:center;margin:8px 0}
+.q-ru{font-size:26px;font-weight:800;text-align:center;margin:8px 0}
+.qlabel{text-align:center;color:var(--muted);font-size:14px;font-weight:600}
+.opts{display:grid;gap:10px;margin-top:24px}
+.opt{
+  background:#fff;border:2px solid var(--line);border-radius:14px;padding:15px 16px;
+  font-size:17px;font-weight:600;cursor:pointer;text-align:center;font-family:inherit;color:var(--ink);
+  transition:border-color .12s, background .12s;
+}
+.opt .ar{font-family:'Amiri',serif;direction:rtl;font-size:22px}
+.opt.right{border-color:var(--green);background:#eef7f0}
+.opt.wrong{border-color:var(--red);background:#fbeeee}
+.opt:disabled{cursor:default}
+.result{text-align:center;padding:10px 0}
+.bigscore{font-size:56px;font-weight:800;color:var(--accent2)}
+.mist{margin-top:18px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.mist h4{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.mist .row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:15px}
+.mist .row:last-child{border:none}
+.mist .row .a{font-family:'Amiri',serif;direction:rtl;font-size:19px}
+.ribbon{font-size:52px}
+.footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:40px}
+@media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}.units{grid-template-columns:repeat(2,1fr)}.ar-big{font-size:42px}}
+</style>
+</head>
+<body>
+<div class="pattern"></div>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ============ ДАННЫЕ: 18 УРОКОВ ПО 6 СЛОВ ============ */
+const LESSONS = [
+{t:"Приветствия",w:[
+ {ar:"مَرْحَبًا",tr:"мар-ха-бан",ru:"здравствуйте"},
+ {ar:"صَبَاح الخَيْر",tr:"са-бах аль-хайр",ru:"доброе утро"},
+ {ar:"مَسَاء الخَيْر",tr:"ма-са аль-хайр",ru:"добрый вечер"},
+ {ar:"شُكْرًا",tr:"шук-ран",ru:"спасибо"},
+ {ar:"مِن فَضْلِك",tr:"мин фад-лик",ru:"пожалуйста"},
+ {ar:"مَعَ السَّلَامَة",tr:"ма-а ас-са-ля-ма",ru:"до свидания"}]},
+{t:"Знакомство",w:[
+ {ar:"مَا اسْمُك؟",tr:"ма смук",ru:"как тебя зовут?"},
+ {ar:"اسْمِي...",tr:"ис-ми",ru:"меня зовут..."},
+ {ar:"كَيْفَ حَالُك؟",tr:"кай-фа ха-лук",ru:"как дела?"},
+ {ar:"أَنَا بِخَيْر",tr:"а-на би-хайр",ru:"я в порядке"},
+ {ar:"نَعَم",tr:"на-ам",ru:"да"},
+ {ar:"لَا",tr:"ля",ru:"нет"}]},
+{t:"Семья",w:[
+ {ar:"أَب",tr:"аб",ru:"отец"},
+ {ar:"أُم",tr:"ум",ru:"мать"},
+ {ar:"أَخ",tr:"ах",ru:"брат"},
+ {ar:"أُخْت",tr:"ухт",ru:"сестра"},
+ {ar:"جَد",tr:"джад",ru:"дедушка"},
+ {ar:"اِبْن",tr:"ибн",ru:"сын"}]},
+{t:"Цифры (1–6)",w:[
+ {ar:"وَاحِد",tr:"ва-хид",ru:"один"},
+ {ar:"اِثْنَان",tr:"ис-на-н",ru:"два"},
+ {ar:"ثَلَاثَة",tr:"са-ля-са",ru:"три"},
+ {ar:"أَرْبَعَة",tr:"ар-ба-а",ru:"четыре"},
+ {ar:"خَمْسَة",tr:"хам-са",ru:"пять"},
+ {ar:"سِتَّة",tr:"сит-та",ru:"шесть"}]},
+{t:"Цифры (7–12)",w:[
+ {ar:"سَبْعَة",tr:"саб-а",ru:"семь"},
+ {ar:"ثَمَانِيَة",tr:"са-ма-ни-я",ru:"восемь"},
+ {ar:"تِسْعَة",tr:"тис-а",ru:"девять"},
+ {ar:"عَشَرَة",tr:"аш-ра",ru:"десять"},
+ {ar:"أَحَدَ عَشَر",tr:"аха-да ашар",ru:"одиннадцать"},
+ {ar:"اِثْنَا عَشَر",tr:"ис-на ашар",ru:"двенадцать"}]},
+{t:"Еда и напитки",w:[
+ {ar:"مَاء",tr:"ма",ru:"вода"},
+ {ar:"خُبْز",tr:"хубз",ru:"хлеб"},
+ {ar:"حَلِيب",tr:"халиб",ru:"молоко"},
+ {ar:"قَهْوَة",tr:"ках-ва",ru:"кофе"},
+ {ar:"شَاي",tr:"шай",ru:"чай"},
+ {ar:"تُفَّاح",tr:"туф-фах",ru:"яблоко"}]},
+{t:"За столом",w:[
+ {ar:"أَرُز",tr:"ар-руз",ru:"рис"},
+ {ar:"لَحْم",tr:"лахм",ru:"мясо"},
+ {ar:"دَجَاج",tr:"да-джадж",ru:"курица"},
+ {ar:"سَمَك",tr:"са-мак",ru:"рыба"},
+ {ar:"فَاكِهَة",tr:"фа-ки-ха",ru:"фрукты"},
+ {ar:"جُبْن",tr:"джубн",ru:"сыр"}]},
+{t:"Цвета",w:[
+ {ar:"أَحْمَر",tr:"ах-мар",ru:"красный"},
+ {ar:"أَزْرَق",tr:"аз-рак",ru:"синий"},
+ {ar:"أَخْضَر",tr:"ах-дар",ru:"зелёный"},
+ {ar:"أَصْفَر",tr:"ас-фар",ru:"жёлтый"},
+ {ar:"أَسْوَد",tr:"ас-вад",ru:"чёрный"},
+ {ar:"أَبْيَض",tr:"аб-йад",ru:"белый"}]},
+{t:"Дни недели",w:[
+ {ar:"الاِثْنَيْن",tr:"аль-ис-найн",ru:"понедельник"},
+ {ar:"الثُّلَاثَاء",tr:"ас-су-ля-са",ru:"вторник"},
+ {ar:"الأَرْبِعَاء",tr:"аль-ар-би-а",ru:"среда"},
+ {ar:"الخَمِيس",tr:"аль-ха-мис",ru:"четверг"},
+ {ar:"الجُمْعَة",tr:"аль-джум-а",ru:"пятница"},
+ {ar:"السَّبْت",tr:"ас-сабт",ru:"суббота"}]},
+{t:"Время",w:[
+ {ar:"اليَوْم",tr:"аль-яум",ru:"сегодня"},
+ {ar:"أَمْس",tr:"амс",ru:"вчера"},
+ {ar:"غَدًا",tr:"гадан",ru:"завтра"},
+ {ar:"الآن",tr:"аль-ан",ru:"сейчас"},
+ {ar:"صَبَاح",tr:"са-бах",ru:"утро"},
+ {ar:"مَسَاء",tr:"ма-са",ru:"вечер"}]},
+{t:"Глаголы",w:[
+ {ar:"يَأْكُل",tr:"йя-куль",ru:"есть"},
+ {ar:"يَشْرَب",tr:"йяш-раб",ru:"пить"},
+ {ar:"يَذْهَب",tr:"йя-зхаб",ru:"идти"},
+ {ar:"يَعْمَل",tr:"йя-маль",ru:"работать"},
+ {ar:"يَقْرَأ",tr:"йяк-ра",ru:"читать"},
+ {ar:"يَكْتُب",tr:"йяк-туб",ru:"писать"}]},
+{t:"Прилагательные",w:[
+ {ar:"كَبِير",tr:"ка-бир",ru:"большой"},
+ {ar:"صَغِير",tr:"са-гир",ru:"маленький"},
+ {ar:"جَدِيد",tr:"джа-дид",ru:"новый"},
+ {ar:"قَدِيم",tr:"ка-дим",ru:"старый"},
+ {ar:"جَيِّد",tr:"джай-йид",ru:"хороший"},
+ {ar:"جَمِيل",tr:"джа-миль",ru:"красивый"}]},
+{t:"Дом",w:[
+ {ar:"بَيْت",tr:"байт",ru:"дом"},
+ {ar:"بَاب",tr:"бяб",ru:"дверь"},
+ {ar:"نَافِذَة",tr:"на-фи-за",ru:"окно"},
+ {ar:"غُرْفَة",tr:"гур-фа",ru:"комната"},
+ {ar:"مَطْبَخ",tr:"мат-бах",ru:"кухня"},
+ {ar:"سَرِير",tr:"са-рир",ru:"кровать"}]},
+{t:"Город",w:[
+ {ar:"شَارِع",tr:"ша-ри",ru:"улица"},
+ {ar:"مَدْرَسَة",tr:"мад-ра-са",ru:"школа"},
+ {ar:"مُسْتَشْفَى",tr:"мус-таш-фа",ru:"больница"},
+ {ar:"مَتْجَر",tr:"мат-джар",ru:"магазин"},
+ {ar:"مَطْعَم",tr:"мат-ам",ru:"ресторан"},
+ {ar:"سَيَّارَة",tr:"сай-я-ра",ru:"машина"}]},
+{t:"Природа",w:[
+ {ar:"شَمْس",tr:"шамс",ru:"солнце"},
+ {ar:"قَمَر",tr:"ка-мар",ru:"луна"},
+ {ar:"نَجْمَة",tr:"надж-ма",ru:"звезда"},
+ {ar:"بَحْر",tr:"бахр",ru:"море"},
+ {ar:"شَجَرَة",tr:"ша-джа-ра",ru:"дерево"},
+ {ar:"زَهْرَة",tr:"за-хра",ru:"цветок"}]},
+{t:"Части тела",w:[
+ {ar:"رَأْس",tr:"рас",ru:"голова"},
+ {ar:"يَد",tr:"яд",ru:"рука"},
+ {ar:"قَلْب",tr:"кальб",ru:"сердце"},
+ {ar:"عَيْن",tr:"айн",ru:"глаз"},
+ {ar:"أُذُن",tr:"у-зун",ru:"ухо"},
+ {ar:"فَم",tr:"фам",ru:"рот"}]},
+{t:"Чувства",w:[
+ {ar:"سَعِيد",tr:"са-ид",ru:"счастливый"},
+ {ar:"حَزِين",tr:"ха-зин",ru:"грустный"},
+ {ar:"تَعْبَان",tr:"та-бан",ru:"уставший"},
+ {ar:"جَائِع",tr:"джа-и",ru:"голодный"},
+ {ar:"عَطْشَان",tr:"ат-шан",ru:"испытывающий жажду"},
+ {ar:"مَرِيض",tr:"ма-рид",ru:"больной"}]},
+{t:"Полезные слова",w:[
+ {ar:"هَذَا",tr:"ха-за",ru:"это"},
+ {ar:"أَيْن",tr:"айн",ru:"где"},
+ {ar:"مَتَى",tr:"ма-та",ru:"когда"},
+ {ar:"لِمَاذَا",tr:"ли-ма-за",ru:"почему"},
+ {ar:"كَم",tr:"кам",ru:"сколько"},
+ {ar:"وَ",tr:"ва",ru:"и"}]}
+];
+
+const BLOCKS = 6;               // 6 блоков: 3 урока + контрольная
+const ALL_WORDS = LESSONS.flatMap(l=>l.w);
+const KEY = "arDaily_v1";
+
+/* ============ СОСТОЯНИЕ ============ */
+function load(){ try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}} }
+function save(s){ localStorage.setItem(KEY,JSON.stringify(s)); }
+let S = Object.assign({done:{},exams:{},lastDay:null,streak:0},load());
+
+function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
+function yesterdayStr(){ const d=new Date(); d.setDate(d.getDate()-1); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
+function touchStreak(){
+  const t=todayStr();
+  if(S.lastDay===t) return;
+  S.streak = (S.lastDay===yesterdayStr()) ? (S.streak||0)+1 : 1;
+  S.lastDay=t; save(S);
+}
+function lessonDone(i){ return S.done[i]!=null; }
+function lessonUnlocked(i){ return i===0 || lessonDone(i-1); }
+function blockLessons(b){ return [b*3, b*3+1, b*3+2]; }
+function examUnlocked(b){ return blockLessons(b).every(lessonDone); }
+function examDone(b){ return S.exams[b]!=null; }
+function wordsLearned(){ return Object.keys(S.done).reduce((n,k)=>n+LESSONS[k].w.length,0); }
+
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function distractors(word, pool, n){
+  const others = shuffle(pool.filter(w=>w.ar!==word.ar));
+  return others.slice(0,n);
+}
+
+/* ============ РЕНДЕР ============ */
+const app = document.getElementById("app");
+let view = {screen:"home"};
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+function topbar(title){
+  return `<div class="topbar"><button class="back" onclick="goHome()">←</button><div class="ptitle">${esc(title)}</div></div>`;
+}
+
+function goHome(){ view={screen:"home"}; render(); window.scrollTo(0,0); }
+
+/* ---------- ГЛАВНАЯ ---------- */
+function renderHome(){
+  const doneLessons = Object.keys(S.done).length;
+  const nextLesson = LESSONS.findIndex((_,i)=>!lessonDone(i));
+  let cta;
+  if(nextLesson===-1) cta = `<button class="btn" onclick="alert('Все уроки пройдены! 🎉')">Всё пройдено!</button>`;
+  else cta = `<button class="btn" onclick="openLesson(${nextLesson})">${nextLesson===0?"Начать обучение ▶":"Продолжить: урок "+(nextLesson+1)+" ▶"}</button>`;
+
+  let unitsHtml="";
+  for(let b=0;b<BLOCKS;b++){
+    unitsHtml += `<div class="block-title">Блок ${b+1}</div><div class="units">`;
+    blockLessons(b).forEach(i=>{
+      const done=lessonDone(i), un=lessonUnlocked(i);
+      const isNext = i===nextLesson;
+      unitsHtml += `<div class="unit ${done?'done':''} ${!un?'locked':''} ${isNext?'next':''}" ${un?`onclick="openLesson(${i})"`:''}>
+        ${done?'<div class="badge">✓ '+(S.done[i].score/S.done[i].total*100|0)+'%</div>':''}
+        <div class="num">УРОК ${i+1}</div>
+        <div class="ico">📖</div>
+        <div class="name">${esc(LESSONS[i].t)}</div>
+      </div>`;
+    });
+    const un=examUnlocked(b), done=examDone(b);
+    unitsHtml += `<div class="unit exam ${done?'done':''} ${!un?'locked':''}" ${un?`onclick="openExam(${b})"`:''}>
+      ${done?`<div class="badge">✓ ${S.exams[b]}%</div>`:''}
+      <div class="num">КОНТРОЛЬНАЯ ${b+1}</div>
+      <div class="ico">🏆</div>
+      <div class="name">${un?'По блоку '+ (b+1):'🔒 Пройдите 3 урока'}</div>
+    </div></div>`;
+  }
+
+  app.innerHTML = `
+    <div class="header">
+      <div class="logo-ar">عَرَبِي كُلَّ يَوْم</div>
+      <h1>Арабский каждый день</h1>
+      <div class="sub">5–7 новых слов в день • тест после каждого урока • контрольная каждые 4 занятия</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>🔥 ${S.streak||0}</b><span>дней подряд</span></div>
+      <div class="stat"><b>${wordsLearned()}</b><span>слов изучено</span></div>
+      <div class="stat"><b>${doneLessons} / ${LESSONS.length}</b><span>уроков</span></div>
+      <div class="stat"><b>${Object.keys(S.exams).length} / ${BLOCKS}</b><span>контрольных</span></div>
+    </div>
+    <div class="cta-row">${cta}</div>
+    ${unitsHtml}
+    <div class="footer-note">Прогресс сохраняется автоматически в этом браузере</div>`;
+}
+
+/* ---------- УРОК: КАРТОЧКИ ---------- */
+let learnIdx=0, hideAns=true;
+function openLesson(i){
+  if(!lessonUnlocked(i)) return;
+  view={screen:"lesson",lesson:i,phase:"learn"};
+  learnIdx=0; hideAns=true; render(); window.scrollTo(0,0);
+}
+function renderLesson(){
+  const L=LESSONS[view.lesson], w=L.w[learnIdx];
+  app.innerHTML = topbar(`Урок ${view.lesson+1}: ${esc(L.t)}`)+`
+    <div class="prog"><div style="width:${(learnIdx+1)/L.w.length*100}%"></div></div>
+    <div class="card">
+      <div class="ar-big">${esc(w.ar)}</div>
+      <div class="tr">${esc(w.tr)}</div>
+      <div class="ru ${hideAns?'hidden-ans':''}">${esc(w.ru)}</div>
+      <div class="reveal"><button class="btn ghost small" onclick="toggleAns()">${hideAns?'Показать перевод 👁':'Скрыть перевод'}</button></div>
+    </div>
+    <div class="dots">${L.w.map((_,k)=>`<div class="dot ${k===learnIdx?'on':''}"></div>`).join('')}</div>
+    <div class="navrow">
+      <button class="btn ghost small" onclick="stepLearn(-1)" ${learnIdx===0?'disabled':''}>← Назад</button>
+      ${learnIdx<L.w.length-1
+        ? `<button class="btn small" onclick="stepLearn(1)">Далее →</button>`
+        : `<button class="btn" onclick="startTest()">К тесту ▶</button>`}
+    </div>`;
+}
+function toggleAns(){ hideAns=!hideAns; renderLesson(); }
+function stepLearn(d){ learnIdx=Math.max(0,Math.min(LESSONS[view.lesson].w.length-1,learnIdx+d)); hideAns=true; renderLesson(); }
+
+/* ---------- ТЕСТ ---------- */
+let quiz=null;
+function makeQuestions(words, pool){
+  return shuffle(words).map((w,i)=>{
+    const type = i%2===0 ? "ar2ru" : "ru2ar";
+    const opts = shuffle([w,...distractors(w,pool,3)]);
+    return {w,type,opts};
+  });
+}
+function startTest(){
+  const L=LESSONS[view.lesson];
+  const pool = ALL_WORDS.filter(x=>!L.w.includes(x)).concat(L.w);
+  quiz = {kind:"lesson", questions:makeQuestions(L.w,pool), qi:0, correct:0, mistakes:[], locked:false};
+  view.phase="test"; render(); window.scrollTo(0,0);
+}
+function startExam(b){
+  if(!examUnlocked(b)) return;
+  const words = blockLessons(b).flatMap(i=>LESSONS[i].w);
+  quiz = {kind:"exam", block:b, questions:makeQuestions(shuffle(words).slice(0,12),ALL_WORDS), qi:0, correct:0, mistakes:[], locked:false};
+  view={screen:"exam",block:b}; render(); window.scrollTo(0,0);
+}
+function openExam(b){ startExam(b); }
+
+function answer(qiIdx,optEl){
+  if(quiz.locked) return; quiz.locked=true;
+  const q=quiz.questions[quiz.qi];
+  const opts=[...document.querySelectorAll('.opt')];
+  const correctVal = q.type==="ar2ru" ? q.w.ru : q.w.ar;
+  opts.forEach(o=>{
+    o.disabled=true;
+    const v = o.dataset.v;
+    if(v===correctVal) o.classList.add('right');
+    else if(o===optEl) o.classList.add('wrong');
+  });
+  if(optEl.dataset.v===correctVal){ quiz.correct++; }
+  else quiz.mistakes.push(q.w);
+  setTimeout(()=>{ quiz.qi++; quiz.locked=false;
+    if(quiz.qi>=quiz.questions.length) finishQuiz(); else render(); },900);
+}
+
+function renderQuiz(){
+  const q=quiz.questions[quiz.qi];
+  const total=quiz.questions.length;
+  const head = quiz.kind==="lesson" ? topbar(`Тест: урок ${view.lesson+1}`) : topbar(`Контрольная ${quiz.block+1} 🏆`);
+  let qHtml;
+  if(q.type==="ar2ru"){
+    qHtml = `<div class="q-ar">${esc(q.w.ar)}</div><div class="tr" style="text-align:center;color:var(--muted);font-style:italic">${esc(q.w.tr)}</div><div class="qlabel">Выберите перевод:</div>`;
+  } else {
+    qHtml = `<div class="q-ru">«${esc(q.w.ru)}»</div><div class="qlabel">Выберите слово на арабском:</div>`;
+  }
+  const optsHtml = q.opts.map(o=>{
+    const label = q.type==="ar2ru" ? esc(o.ru) : `<span class="ar">${esc(o.ar)}</span>`;
+    return `<button class="opt" data-v="${esc(q.type==='ar2ru'?o.ru:o.ar)}" onclick="answer(${quiz.qi},this)">${label}</button>`;
+  }).join('');
+  app.innerHTML = head+`
+    <div class="prog"><div style="width:${quiz.qi/total*100}%"></div></div>
+    <div style="text-align:center;color:var(--muted);font-size:13px;font-weight:700">Вопрос ${quiz.qi+1} из ${total}</div>
+    ${qHtml}
+    <div class="opts">${optsHtml}</div>`;
+}
+
+function finishQuiz(){
+  const total=quiz.questions.length, correct=quiz.correct, pct=Math.round(correct/total*100);
+  if(quiz.kind==="lesson"){
+    const i=view.lesson;
+    const prev=S.done[i];
+    if(!prev || pct>prev.score/prev.total*100) S.done[i]={score:correct,total,date:todayStr()};
+    touchStreak(); save(S);
+  } else {
+    const prev=S.exams[quiz.block];
+    if(!prev || pct>prev) S.exams[quiz.block]=pct;
+    touchStreak(); save(S);
+  }
+  const perfect = pct===100;
+  const good = pct>=80;
+  const emoji = perfect?"🏆":good?"🎉":"💪";
+  const msg = perfect?"Идеально! Все слова на отлично!":good?"Отличный результат!":"Неплохо! Повторите слова с ошибками.";
+  const mistakesHtml = quiz.mistakes.length?`
+    <div class="mist"><h4>Слова с ошибками (${quiz.mistakes.length})</h4>
+      ${quiz.mistakes.map(w=>`<div class="row"><span class="a">${esc(w.ar)} <span style="font-size:12px;color:var(--muted)">(${esc(w.tr)})</span></span><b>${esc(w.ru)}</b></div>`).join('')}
+    </div>`:'';
+  app.innerHTML = (quiz.kind==="lesson"?topbar(`Урок ${view.lesson+1} завершён`):topbar(`Контрольная ${quiz.block+1} завершена`))+`
+    <div class="card result">
+      <div class="ribbon">${emoji}</div>
+      <div class="bigscore">${pct}%</div>
+      <div style="color:var(--muted);font-weight:600">${correct} из ${total} правильно</div>
+      <p style="margin-top:10px;font-weight:700">${msg}</p>
+    </div>
+    ${mistakesHtml}
+    <div class="navrow">
+      ${quiz.mistakes.length?`<button class="btn ghost" onclick="retryMistakes()">Повторить ошибки 🔄</button>`:''}
+      <button class="btn" onclick="goHome()">На главную 🏠</button>
+    </div>`;
+  window.scrollTo(0,0);
+}
+
+function retryMistakes(){
+  quiz.questions = makeQuestions(quiz.mistakes, ALL_WORDS);
+  quiz.qi=0; quiz.correct=0; quiz.mistakes=[]; quiz.locked=false;
+  render(); window.scrollTo(0,0);
+}
+
+/* ---------- РОУТЕР ---------- */
+function render(){
+  if(view.screen==="home") renderHome();
+  else if(view.screen==="lesson"){
+    if(view.phase==="learn") renderLesson();
+    else if(view.phase==="test") renderQuiz();
+  }
+  else if(view.screen==="exam") renderQuiz();
+}
+render();
+</script>
+</body>
+</html>
